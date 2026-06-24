@@ -6,6 +6,29 @@
 
 ---
 
+## Screenshots
+
+<table>
+<tr>
+<td><img src="screenshot-01.png" alt="Age 20 scenario — 240 months already gone" width="100%"></td>
+<td><img src="screenshot-02.png" alt="Parents scenario — if you see them every day" width="100%"></td>
+</tr>
+<tr>
+<td><em>Age 20: 240 of your 900 squares are already behind you.</em></td>
+<td><em>Your parents at 50: 300 months left. See them every day and you share all 300.</em></td>
+</tr>
+<tr>
+<td><img src="screenshot-04.png" alt="Personal grid with longevity habit sliders" width="100%"></td>
+<td><img src="screenshot-03.png" alt="Reveal your own paper CTA" width="100%"></td>
+</tr>
+<tr>
+<td><em>Enter your birth month → see exactly where you are. Unlock up to 35 bonus years.</em></td>
+<td><em>Enter your birth month to see your own A4 paper. Reveal what remains.</em></td>
+</tr>
+</table>
+
+---
+
 ## What is this?
 
 A single-page interactive tool that visualizes your entire life on one A4 sheet of paper.
