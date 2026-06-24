@@ -284,7 +284,7 @@ input[type=range]{width:100%;accent-color:var(--bonus)}
     <div class="kofi-emoji">☕</div>
     <div class="kofi-title">This tool took real work to build.</div>
     <div class="kofi-sub">If it moved you — even a little — a coffee keeps me building more things like this. No pressure at all.</div>
-    <a class="kofi-btn" href="https://ko-fi.com/vantuanle43758" target="_blank" rel="noopener" onclick="closeKofi()">☕ Buy me a coffee on Ko-fi</a>
+    <a class="kofi-btn" href="#" data-enc="aHR0cHM6Ly9rby1maS5jb20vdmFudHVhbmxlNDM3NTg=" target="_blank" rel="noopener" onclick="closeKofi()">☕ Buy me a coffee on Ko-fi</a>
     <button class="kofi-skip" onclick="closeKofi()">No thanks — I'll keep going</button>
   </div>
 </div>
@@ -604,7 +604,7 @@ input[type=range]{width:100%;accent-color:var(--bonus)}
     <div class="kofi-emoji">☕</div>
     <div class="kofi-title">This tool took real work to build.</div>
     <div class="kofi-sub">If it moved you — even a little — a coffee keeps me building more things like this. No pressure at all.</div>
-    <a class="kofi-btn" href="https://ko-fi.com/vantuanle43758" target="_blank" rel="noopener" onclick="closeKofi()">☕ Buy me a coffee on Ko-fi</a>
+    <a class="kofi-btn" href="#" data-enc="aHR0cHM6Ly9rby1maS5jb20vdmFudHVhbmxlNDM3NTg=" target="_blank" rel="noopener" onclick="closeKofi()">☕ Buy me a coffee on Ko-fi</a>
     <button class="kofi-skip" onclick="closeKofi()">No thanks — I'll keep going</button>
   </div>
 </div>
@@ -1122,6 +1122,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="footer-note">See your own grid · share with someone you love</div>
 </div>
 <script>window.onload=function(){window.print()}<\/script>
+<script>
+document.querySelectorAll('[data-enc]').forEach(function(el){
+  el.href=atob(el.getAttribute('data-enc'));
+});
+</script>
 </body></html>`);
   win.document.close();
   setTimeout(showKofi, 2000);
@@ -1184,6 +1189,11 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
     document.getElementById('actCard').style.display='block';
   }
 })();
+</script>
+<script>
+document.querySelectorAll('[data-enc]').forEach(function(el){
+  el.href=atob(el.getAttribute('data-enc'));
+});
 </script>
 </body>
 </html>
