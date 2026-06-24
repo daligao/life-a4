@@ -1,0 +1,869 @@
+<!DOCTYPE html><!-- v2.1 -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Life is an A4 Sheet of Paper — 900 Squares, 75 Years</title>
+<meta name="description" content="75 years. 900 squares. 1 square = 1 month of your life. See how much you've used, how much remains, and what to do with what's left.">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js" defer></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09101F;--surf:#111827;--surf2:#1A2436;--paper:#FAFBFD;
+  --past:#5A7A96;--future:#DCE8F5;--bonus:#34D399;--red:#EF4444;
+  --accent:#6366F1;--accent-l:#818CF8;--gold:#F59E0B;--green:#10B981;
+  --amber:#F97316;--rose:#F43F5E;--white:#F1F5F9;--muted:#64748B;
+}
+body{background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;overflow-x:hidden}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px 80px;background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,.18) 0%,transparent 60%)}
+.hero-eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-l);margin-bottom:16px}
+.hero h1{font-size:clamp(2.2rem,7vw,5.2rem);font-weight:900;letter-spacing:-.04em;line-height:1.04;margin-bottom:24px}
+.hero h1 em{font-style:normal;color:var(--accent-l)}
+.hero p{font-size:clamp(.95rem,2.5vw,1.2rem);color:var(--muted);max-width:500px;margin-bottom:40px;line-height:1.75}
+.scroll-hint{display:inline-flex;flex-direction:column;align-items:center;gap:6px;color:var(--white);font-size:17px;font-weight:700;letter-spacing:.04em;background:rgba(99,102,241,.18);border:1.5px solid rgba(129,140,248,.4);border-radius:50px;padding:14px 28px;cursor:pointer;animation:bob 2s ease-in-out infinite}
+.scroll-hint span{font-size:22px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+
+/* STORIES */
+.stories{max-width:1300px;margin:0 auto;padding:60px 20px 40px}
+.stories-intro{text-align:center;margin-bottom:56px}
+.stories-intro h2{font-size:clamp(1.5rem,4vw,2.4rem);font-weight:900;letter-spacing:-.03em;margin-bottom:12px}
+.stories-intro p{color:var(--muted);font-size:1rem;max-width:480px;margin:0 auto}
+.story-card{display:grid;grid-template-columns:1fr 500px;gap:56px;align-items:center;margin-bottom:80px}
+.story-card.flip{grid-template-columns:500px 1fr}
+.story-card.flip .story-text{order:2}
+.story-card.flip .sgw{order:1}
+@media(max-width:960px){.story-card,.story-card.flip{grid-template-columns:1fr;gap:28px}.story-card.flip .story-text,.story-card.flip .sgw{order:unset}}
+.story-icon{font-size:2.6rem;margin-bottom:14px}
+.story-card h3{font-size:clamp(1.3rem,3vw,2rem);font-weight:900;letter-spacing:-.03em;margin-bottom:12px;line-height:1.2}
+.story-card p{color:var(--muted);font-size:1rem;line-height:1.8;max-width:480px}
+.story-note{font-size:11px;color:var(--accent-l);margin-top:8px;font-style:italic}
+.sgw{background:var(--paper);border-radius:6px;padding:14px;box-shadow:0 2px 4px rgba(0,0,0,.15),0 8px 24px rgba(0,0,0,.25),0 24px 60px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.8)}
+.sgrid{display:grid;grid-template-columns:repeat(30,1fr);gap:2px}
+.sleg{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.sleg span{display:flex;align-items:center;gap:5px;font-size:10px;color:#64748B}
+.sleg-dot{width:10px;height:10px;border-radius:1.5px;flex-shrink:0}
+
+/* DIVIDER */
+.section-divider{border:none;border-top:1px solid rgba(255,255,255,.06);margin:0 auto;max-width:1100px}
+
+/* CTA */
+.cta-section{text-align:center;padding:80px 20px 100px;background:linear-gradient(180deg,transparent 0%,rgba(99,102,241,.06) 50%,transparent 100%)}
+.cta-section h2{font-size:clamp(1.6rem,4vw,2.8rem);font-weight:900;letter-spacing:-.03em;margin-bottom:12px}
+.cta-section p{color:var(--muted);margin-bottom:32px;font-size:1rem;line-height:1.6}
+.birth-box{display:inline-flex;flex-direction:column;align-items:center;gap:14px;background:var(--surf);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 40px;max-width:420px;width:100%}
+.birth-label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+input[type=month]{width:100%;padding:14px 16px;background:var(--surf2);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:var(--white);font-size:16px;outline:none}
+input[type=month]:focus{border-color:var(--accent)}
+.btn-reveal{width:100%;padding:16px;background:linear-gradient(120deg,var(--accent),var(--accent-l));border:none;border-radius:12px;color:white;font-size:17px;font-weight:800;cursor:pointer}
+.btn-reveal:hover{filter:brightness(1.1)}
+
+/* DASH */
+.dash{max-width:1300px;margin:0 auto;padding:48px 24px 100px;display:none}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+@media(max-width:880px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--surf);border:1px solid rgba(255,255,255,.06);border-radius:18px;padding:24px 28px;text-align:center}
+.stat-n{display:block;font-size:clamp(2rem,4vw,3rem);font-weight:900;letter-spacing:-.05em;line-height:1;margin-bottom:6px}
+.stat-n.g{color:var(--green)}
+.stat-l{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+.main{display:grid;grid-template-columns:auto 1fr;gap:44px;align-items:start}
+@media(max-width:960px){.main{grid-template-columns:1fr}}
+
+/* PAPER */
+.paper-panel{position:sticky;top:24px}
+.paper-wrap{background:var(--paper);border-radius:3px;padding:14px;box-shadow:0 2px 4px rgba(0,0,0,.15),0 8px 24px rgba(0,0,0,.25),0 32px 80px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.8);position:relative;width:500px}
+@media(max-width:960px){.paper-wrap{width:100%;max-width:500px;margin:0 auto}}
+.a4{display:grid;grid-template-columns:repeat(30,1fr);gap:2px}
+.cell{aspect-ratio:1;border-radius:1.5px;transition:background .2s;position:relative}
+.cell.past{background:var(--past)}
+.cell.future{background:var(--future)}
+.cell.bonus{background:var(--bonus);box-shadow:0 0 4px rgba(52,211,153,.5)}
+.cell.now{background:var(--red)!important;box-shadow:0 0 6px rgba(239,68,68,.8)}
+.cell.ms::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:4px;background:var(--red);border-radius:50%;pointer-events:none}
+.cell.ms{cursor:help}
+.wish-on-paper{position:absolute;bottom:16px;left:14px;right:14px;font-size:8.5px;line-height:1.75;color:#4338CA;font-style:italic;display:none;pointer-events:none}
+.paper-foot{text-align:center;margin-top:12px;font-size:11px;color:var(--muted);line-height:1.7}
+.ms-legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--white);margin-top:10px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:8px 12px}
+.ms-dot{width:8px;height:8px;background:var(--red);border-radius:50%;flex-shrink:0;box-shadow:0 0 6px rgba(239,68,68,.8)}
+
+/* CONTROLS */
+.ctrl{display:flex;flex-direction:column;gap:24px}
+.card{background:var(--surf);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:26px 28px}
+.card-eyebrow{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+.card-h{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.card-sub{font-size:.875rem;color:var(--muted);margin-bottom:18px;line-height:1.6}
+.w-list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow-y:auto;margin-bottom:16px}
+.w-card{background:var(--surf2);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5}
+.w-card.mine{border-left:2px solid var(--accent-l)}
+.w-meta{font-size:10px;color:var(--muted);margin-top:4px}
+.wish-input{width:100%;padding:12px 14px;background:var(--surf2);border:1px solid rgba(255,255,255,.08);border-radius:10px;color:var(--white);font-size:14px;outline:none;margin-bottom:10px}
+.wish-input:focus{border-color:var(--accent-l)}
+.privacy-toggle{display:flex;gap:8px;margin-bottom:10px}
+.ptab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;border:1px solid rgba(255,255,255,.1);border-radius:10px;cursor:pointer;font-size:13px;font-weight:600;transition:.2s}
+.ptab.active{background:rgba(99,102,241,.15);border-color:var(--accent-l);color:var(--accent-l)}
+.privacy-note{font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:14px}
+.btn-lock{width:100%;padding:14px;background:linear-gradient(120deg,#312E81,#4338CA);border:none;border-radius:12px;color:white;font-size:15px;font-weight:800;cursor:pointer}
+.habits{display:flex;flex-direction:column;gap:20px}
+.hrow{display:grid;grid-template-columns:1fr 44px;gap:12px;align-items:center}
+.hlabel{font-size:13px;font-weight:600;margin-bottom:2px}
+.hdesc{font-size:11px;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--bonus)}
+.hval{text-align:right;font-size:13px;font-weight:700;color:var(--bonus)}
+.books{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media(max-width:700px){.books{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.books{grid-template-columns:1fr}}
+@media(max-width:560px){.books{grid-template-columns:1fr}}
+.book{display:block;text-decoration:none;background:var(--surf2);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px;transition:.2s}
+.book:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
+.book-icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px}
+.book-title{font-size:13px;font-weight:700;color:var(--white);margin-bottom:2px}
+.book-author{font-size:11px;color:var(--muted);margin-bottom:8px}
+.book-cta{font-size:11px;color:var(--amber);font-weight:700}
+.actions{display:flex;flex-direction:column;gap:10px}
+.btn-save{width:100%;padding:14px;background:var(--surf2);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:var(--white);font-size:15px;font-weight:800;cursor:pointer;transition:.2s}
+.btn-save:hover{border-color:rgba(255,255,255,.2)}
+.btn-share{width:100%;padding:14px;background:linear-gradient(120deg,#0F172A,#1E293B);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:var(--white);font-size:15px;font-weight:700;cursor:pointer}
+.bloomer-list{display:flex;flex-direction:column;gap:14px}
+.bloomer{display:flex;gap:14px;align-items:flex-start}
+.bloomer-age{font-size:22px;font-weight:900;color:var(--red);min-width:44px;line-height:1}
+.bloomer-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.bloomer-what{font-size:12px;color:var(--muted);line-height:1.5}
+#actCard{display:none;background:var(--surf);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:26px 28px}
+.share-preview{font-size:12px;color:var(--muted);margin-top:10px;padding:10px;background:var(--surf2);border-radius:8px;display:none}
+[data-tip]{position:relative}
+[data-tip]:hover::before{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1E293B;color:var(--white);font-size:10.5px;padding:8px 12px;border-radius:8px;white-space:normal;z-index:200;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.4);max-width:220px;text-align:center}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1E293B;color:var(--white);padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;transition:.35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+/* KO-FI MODAL */
+.kofi-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:8000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:.3s}
+.kofi-overlay.show{opacity:1;pointer-events:all}
+.kofi-box{background:linear-gradient(155deg,#111827,#1a2540);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:36px 32px;max-width:380px;width:90%;text-align:center;transform:scale(.9);transition:.3s}
+.kofi-overlay.show .kofi-box{transform:scale(1)}
+.kofi-emoji{font-size:3rem;margin-bottom:12px}
+.kofi-title{font-size:1.3rem;font-weight:900;color:var(--white);margin-bottom:8px;letter-spacing:-.02em}
+.kofi-sub{font-size:.875rem;color:var(--muted);line-height:1.65;margin-bottom:24px}
+.kofi-btn{display:block;width:100%;padding:14px;background:linear-gradient(120deg,#FF5E5B,#FF9A3C);border:none;border-radius:12px;color:white;font-size:16px;font-weight:800;cursor:pointer;text-decoration:none;margin-bottom:10px}
+.kofi-skip{display:block;width:100%;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:12px;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer}
+.kofi-skip:hover{border-color:rgba(255,255,255,.25);color:var(--white)}
+/* RELATED TOOLS */
+.related{max-width:1300px;margin:0 auto;padding:40px 24px 80px}
+.related-h{font-size:clamp(1.1rem,3vw,1.6rem);font-weight:900;letter-spacing:-.02em;margin-bottom:6px}
+.related-sub{font-size:.95rem;color:var(--muted);margin-bottom:28px}
+.rel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.rel-card{display:flex;flex-direction:column;gap:10px;background:var(--surf);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:22px 20px;text-decoration:none;transition:.2s}
+.rel-card:hover{border-color:rgba(255,255,255,.2);transform:translateY(-3px)}
+.rel-icon{font-size:2rem}
+.rel-name{font-size:1rem;font-weight:800;color:var(--white)}
+.rel-desc{font-size:.82rem;color:var(--muted);line-height:1.55;flex:1}
+.rel-cta{font-size:.8rem;font-weight:700;color:var(--accent-l)}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">A visual reminder of what actually matters</div>
+  <h1>Your life is<br><em>an A4 sheet</em><br>of paper.</h1>
+  <p>75 years. 900 squares. Each one is a month of your life. Before you see yours — scroll to understand what these squares really mean.</p>
+  <div class="scroll-hint" onclick="document.getElementById('stories').scrollIntoView({behavior:'smooth'})"><span>↓</span> Scroll to discover</div>
+</section>
+
+<!-- STORIES -->
+<section class="stories" id="stories">
+  <div class="stories-intro">
+    <h2>How much time do we really have?</h2>
+    <p>Every grid below is 900 squares — one complete human life. Each square is one month. See what that means.</p>
+  </div>
+  <div id="storyCards"></div>
+</section>
+
+<hr class="section-divider">
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>Now see your own paper.</h2>
+  <p>Enter your birth month. We'll show exactly where you are — and how much remains.</p>
+  <div class="birth-box">
+    <label class="birth-label" for="bm">Your birth month</label>
+    <input type="month" id="bm">
+    <button class="btn-reveal" onclick="reveal()">Reveal My A4 Paper →</button>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<div class="dash" id="dash">
+  <div class="stats">
+    <div class="stat"><span class="stat-n" id="sLived">—</span><span class="stat-l">Months lived</span></div>
+    <div class="stat"><span class="stat-n" id="sLeft">—</span><span class="stat-l">Months remaining (base 75 yrs)</span></div>
+    <div class="stat"><span class="stat-n g" id="sBonus">+0</span><span class="stat-l">Bonus months from healthy habits</span></div>
+  </div>
+  <div class="main">
+    <div class="paper-panel">
+      <div class="paper-wrap" id="paperWrap">
+        <div class="a4" id="a4"></div>
+        <div class="wish-on-paper" id="wop"></div>
+      </div>
+      <div class="paper-foot">
+        1 square = 1 month of your life<br>
+        ⬛ lived &nbsp;·&nbsp; ⬜ remaining &nbsp;·&nbsp; 🟩 bonus (up to 110 yrs)
+        <div class="ms-legend"><span class="ms-dot"></span>🔴 = Famous people who started their greatest work <em>after</em> you — hover to see who</div>
+      </div>
+    </div>
+    <div class="ctrl">
+      <div class="card">
+        <span class="card-eyebrow">What others want to do with their remaining squares</span>
+        <div class="w-list" id="wList"></div>
+      </div>
+      <div class="card">
+        <h3 class="card-h">Seal your wishes on this paper</h3>
+        <p class="card-sub">What do you want to do with your remaining squares? Write 1–3 wishes. They'll appear written on your A4 paper.</p>
+        <input class="wish-input" id="w1" placeholder="#1 wish — your most important one" maxlength="120">
+        <input class="wish-input" id="w2" placeholder="#2 wish (optional)" maxlength="120">
+        <input class="wish-input" id="w3" placeholder="#3 wish (optional)" maxlength="120">
+        <div class="privacy-toggle">
+          <label class="ptab active" id="pt-private"><input type="radio" name="privacy" value="private" checked hidden>🔒 Keep private</label>
+          <label class="ptab" id="pt-public"><input type="radio" name="privacy" value="public" hidden>🌍 Share with community</label>
+        </div>
+        <p class="privacy-note" id="privacyNote">Stored locally on your device so you can download your A4 paper image. We never collect or see your wishes.</p>
+        <button class="btn-lock" id="btnLock" onclick="lockWishes()">🔒 Seal My Wishes on My Paper</button>
+      </div>
+      <div id="actCard">
+        <h3 class="card-h">Your A4 paper is ready</h3>
+        <p class="card-sub">Print it and hang it where you'll see it every day — or share with someone who needs a reminder.</p>
+        <div class="actions">
+          <button class="btn-save" onclick="printPaper()" style="background:linear-gradient(120deg,#6366f1,#818cf8);border:none;">🖨️ Print &amp; Hang on Wall</button>
+          <button class="btn-save" onclick="saveImg()">📥 Download PNG</button>
+          <button class="btn-share" onclick="sharePaper()">↗ Share</button>
+        </div>
+        <div class="share-preview" id="sp"></div>
+      </div>
+      <div class="card">
+        <h3 class="card-h">Unlock bonus months 🟩</h3>
+        <p class="card-sub">These 7 habits can extend your life from 75 up to 110 years. Drag the sliders and watch green squares grow on your paper.</p>
+        <div class="habits" id="habits"></div>
+        <p style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.6">Based on 严桂凤奶奶's habits and longevity research. All 7 at 100% = up to 35 bonus years (420 squares).</p>
+      </div>
+      <div class="card">
+        <span class="card-eyebrow">The science behind the 7 habits</span>
+        <div class="books">
+          <a class="book" href="https://www.amazon.com/dp/0593236599?tag=ordinarymantr-20" target="_blank" rel="noopener">
+            <div class="book-icon" style="background:linear-gradient(135deg,#1E3A5F,#2563EB)">📗</div>
+            <div class="book-title">Outlive: The Science &amp; Art of Longevity</div>
+            <div class="book-author">Peter Attia MD</div>
+            <div class="book-cta">Get it on Amazon →</div>
+          </a>
+          <a class="book" href="https://www.amazon.com/dp/0735211299?tag=ordinarymantr-20" target="_blank" rel="noopener">
+            <div class="book-icon" style="background:linear-gradient(135deg,#1A3A1A,#16A34A)">📘</div>
+            <div class="book-title">Atomic Habits</div>
+            <div class="book-author">James Clear</div>
+            <div class="book-cta">Get it on Amazon →</div>
+          </a>
+          <a class="book" href="https://www.amazon.com/dp/0358567092?tag=ordinarymantr-20" target="_blank" rel="noopener">
+            <div class="book-icon" style="background:linear-gradient(135deg,#1C1A0F,#D97706)">💰</div>
+            <div class="book-title">Die With Zero</div>
+            <div class="book-author">Bill Perkins</div>
+            <div class="book-cta">Get it on Amazon →</div>
+          </a>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="card-h">🔴 Those red dots on your paper?</h3>
+        <p class="card-sub">Each red dot marks the exact month when a famous person had their greatest breakthrough. You hover to see who — and discover that most of them started <em>after</em> you.</p>
+        <div class="bloomer-list" id="bloomerList"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KO-FI MODAL -->
+<div class="kofi-overlay" id="kofiOverlay">
+  <div class="kofi-box">
+    <div class="kofi-emoji">☕</div>
+    <div class="kofi-title">This tool took real work to build.</div>
+    <div class="kofi-sub">If it moved you — even a little — a coffee keeps me building more things like this. No pressure at all.</div>
+    <a class="kofi-btn" href="https://ko-fi.com/vantuanle43758" target="_blank" rel="noopener" onclick="closeKofi()">☕ Buy me a coffee on Ko-fi</a>
+    <button class="kofi-skip" onclick="closeKofi()">No thanks — I'll keep going</button>
+  </div>
+</div>
+
+<!-- RELATED TOOLS -->
+<section class="related">
+  <div class="related-h">More tools you might like</div>
+  <div class="related-sub">All free. All built by one person. All designed to make you think.</div>
+  <div class="rel-grid">
+    <a class="rel-card" href="../levelup-habit-tracker.html">
+      <div class="rel-icon">🏆</div>
+      <div class="rel-name">LevelUp Habit Tracker</div>
+      <div class="rel-desc">Turn the 7 longevity habits from this tool into a daily streak. Watch your green squares grow.</div>
+      <div class="rel-cta">Open Tool →</div>
+    </a>
+    <a class="rel-card" href="https://ordinarymantrying.com/life-simulator-legendary-decisions/">
+      <div class="rel-icon">🎮</div>
+      <div class="rel-name">Zhang Xue Life Simulator</div>
+      <div class="rel-desc">Play out the choices that shaped a real person's life. Different decisions, different outcomes.</div>
+      <div class="rel-cta">Open Tool →</div>
+    </a>
+    <a class="rel-card" href="../rowling-simulator.html">
+      <div class="rel-icon">📖</div>
+      <div class="rel-name">J.K. Rowling Simulator</div>
+      <div class="rel-desc">She's the red dot at month 384. Rejected 12 times, on welfare — then the world changed. Play her path.</div>
+      <div class="rel-cta">Open Tool →</div>
+    </a>
+    <a class="rel-card" href="../mandela-simulator.html">
+      <div class="rel-icon">✊</div>
+      <div class="rel-name">Nelson Mandela Simulator</div>
+      <div class="rel-desc">He's the red dot at month 900 — became president at 75. The last square of a 75-year life.</div>
+      <div class="rel-cta">Open Tool →</div>
+    </a>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONSTANTS ──
+const BASE_YEARS = 75, MAX_YEARS = 110;
+const BASE = BASE_YEARS * 12;        // 900
+const MAX_BONUS = (MAX_YEARS - BASE_YEARS) * 12; // 420
+const COLS = 30;
+
+// ── DATA ──
+const HABITS = [
+  {e:'☀️', n:'Sun & Vitamin D',   d:'20–30 min daily sunlight. Supports bone density, mood, and immunity.'},
+  {e:'🗣️', n:'Social Connection', d:'Regular face-to-face conversations lower cognitive decline risk by 40%.'},
+  {e:'🚶', n:'Daily Walking',     d:'30 min/day reduces heart disease, diabetes, and all-cause mortality.'},
+  {e:'🛌', n:'Quality Sleep',     d:'7–9 hours. The brain\'s glymphatic system cleanses only during deep sleep.'},
+  {e:'🥗', n:'Balanced Diet',     d:'No skipping meals, varied nutrition, slow eating — reduces metabolic disease.'},
+  {e:'📉', n:'Low Fat Intake',    d:'Excess saturated fat accelerates artery hardening. Light doesn\'t mean boring.'},
+  {e:'😌', n:'Emotional Balance', d:'Chronic suppressed anger is linked to several cancers. Let it go — literally.'},
+];
+
+const BLOOMERS = [
+  {age:32, who:'J.K. Rowling',     what:'Sold Harry Potter — after 12 rejections — while on welfare with an infant', month:384},
+  {age:40, who:'Vera Wang',        what:'Left figure skating and began designing wedding dresses', month:480},
+  {age:44, who:'Henry Ford',       what:'Founded Ford Motor Company and launched the car that changed the world', month:528},
+  {age:52, who:'Ray Kroc',         what:'Bought McDonald\'s franchise rights. Global empire followed.', month:624},
+  {age:65, who:'Colonel Sanders',  what:'Started franchising KFC with a handshake and a secret recipe.', month:780},
+  {age:75, who:'Nelson Mandela',   what:'Was inaugurated as South Africa\'s first democratically elected President', month:900},
+];
+
+const COMMUNITY = [
+  "Travel to every continent before I turn 50","Learn to play piano — one song my mother loves",
+  "Write a book, even if no one reads it","Tell my father I love him, out loud",
+  "Watch my daughter graduate from college","Volunteer abroad for at least three months",
+  "Run a half marathon","Learn to cook my grandmother's recipes",
+  "Take my parents to the place they've always wanted to see","Build something with my hands that lasts",
+  "Forgive someone I've been holding a grudge against","Watch every sunrise for a week straight",
+  "Start the business I've been scared to start","See the northern lights","Raise a dog from a puppy",
+  "Write letters to my children they'll read when I'm gone","Learn a new language well enough to dream in it",
+  "Sit with my parents and ask them everything I never dared to ask",
+  "Make a stranger's day without them knowing it was me","Plant a tree and watch it grow taller than I am",
+  "Spend a full month doing absolutely nothing","Master one dish that people remember me by",
+  "Read 100 books that changed someone's life","Swim in the ocean at midnight",
+  "Spend a year living in a country I've never been to",
+];
+
+// ── SCENARIOS ──
+// gray=months already past, hlStart=highlight start cell, hlCount=cells to highlight
+// hlColor=highlight color, showBlank=all cells light except highlight, dimRest=remaining-but-not-together cells
+const SCENARIOS = [
+  { icon:'🧒', title:'If you\'re 20 today',
+    copy:'You\'ve already walked through <strong>240 of your 900 squares.</strong> Childhood, school, every birthday up to now — behind you.',
+    gray:240, hlStart:null, hlCount:0, hlColor:null,
+    leg:[{c:'#5A7A96',l:'Already lived (240 months)'},{c:'#DCE8F5',l:'Remaining (660 months)',b:true}] },
+
+  { icon:'🎓', title:'College graduate',
+    copy:'Four years of university — late nights, exams, friendships. That chapter was <strong>48 squares.</strong> You\'ve used 264 in total.',
+    gray:240, hlStart:240, hlCount:48, hlColor:'#818CF8',
+    leg:[{c:'#5A7A96',l:'Already lived'},{c:'#818CF8',l:'University (48 months)'},{c:'#DCE8F5',l:'Ahead',b:true}] },
+
+  { icon:'💕', title:'A 6-month romance',
+    copy:'That relationship that felt like a whole lifetime — the late nights, the firsts, the heartbreak. It was exactly <strong>6 squares</strong> on this paper.',
+    gray:0, hlStart:0, hlCount:6, hlColor:'#F43F5E', showBlank:true,
+    leg:[{c:'#F43F5E',l:'That 6-month relationship'},{c:'#DCE8F5',l:'The rest of a life',b:true}] },
+
+  { icon:'💼', title:'Age 30 — the grind begins',
+    copy:'Thirty years in. Career pressure, rent, responsibilities. <strong>360 squares behind you.</strong> The paper is 40% gone. What does the rest hold?',
+    gray:360, hlStart:null, hlCount:0, hlColor:null,
+    leg:[{c:'#5A7A96',l:'Already lived (360 months)'},{c:'#DCE8F5',l:'Remaining',b:true}] },
+
+  { icon:'👶', title:'New parent — before kindergarten',
+    copy:'Your baby is born. Before they start school at age 3, you have <strong>36 squares</strong> of daily life together. Every morning. Every first word. Every night.',
+    gray:360, hlStart:360, hlCount:36, hlColor:'#FBBF24',
+    leg:[{c:'#5A7A96',l:'Already lived'},{c:'#FBBF24',l:'Daily life with baby (36 months)'},{c:'#DCE8F5',l:'Ahead',b:true}] },
+
+  { icon:'🏫', title:'Raising a child — before they leave home',
+    copy:'From school at age 6 until they leave for college at 18 — you share about <strong>144 squares</strong> under the same roof.',
+    gray:396, hlStart:396, hlCount:144, hlColor:'#F97316',
+    leg:[{c:'#5A7A96',l:'Already lived'},{c:'#F97316',l:'Raising your child (144 months)'},{c:'#DCE8F5',l:'After they leave',b:true}] },
+
+  { icon:'👨‍👩‍👧', title:'Your parents at 50',
+    copy:'If your parents are 50 right now, this is their paper. <strong>600 squares already behind them.</strong> 300 remain. This is what you\'re working with — together.',
+    gray:600, hlStart:null, hlCount:0, hlColor:null,
+    note:'This grid shows your parents\' 75-year life',
+    leg:[{c:'#5A7A96',l:'Their past (600 months)'},{c:'#DCE8F5',l:'Their remaining time (300 months)',b:true}] },
+
+  { icon:'📅', title:'If you see them every day',
+    copy:'With 300 squares left in their lives, being there every single day means you could share <strong>all 300.</strong> The whole remaining paper. Together.',
+    gray:600, hlStart:600, hlCount:300, hlColor:'#34D399',
+    note:'This grid shows your parents\' 75-year life',
+    leg:[{c:'#5A7A96',l:'Their past'},{c:'#34D399',l:'Every day together (300 months)'}] },
+
+  { icon:'📆', title:'Twice a month',
+    copy:'Visit twice a month, one day each time. Out of 300 remaining squares, you\'re truly present for <strong>about 20.</strong> Twenty squares. Out of 300.',
+    gray:600, hlStart:600, hlCount:20, hlColor:'#F97316', dimRest:280,
+    note:'This grid shows your parents\' 75-year life',
+    leg:[{c:'#5A7A96',l:'Their past'},{c:'#F97316',l:'Real presence (20 months)'},{c:'#DCE8F5',l:'Months you won\'t be there',b:true}] },
+
+  { icon:'🗓️', title:'Once a year',
+    copy:'One visit a year. A few days, then goodbye. Over 25 years, that\'s <strong>maybe 4 squares</strong> of real presence. Four. Out of 300.',
+    gray:600, hlStart:600, hlCount:4, hlColor:'#EF4444', dimRest:296,
+    note:'This grid shows your parents\' 75-year life',
+    leg:[{c:'#5A7A96',l:'Their past'},{c:'#EF4444',l:'Real presence (just 4 months)'},{c:'#DCE8F5',l:'Months you\'ll miss',b:true}] },
+];
+
+// ── STATE ──
+let pastM = 0, bonusM = 0, userWishes = [];
+
+// ── SCENARIO GRIDS ──
+function scenarioGridHTML(s) {
+  let html = '';
+  const {gray=0, hlStart=null, hlCount=0, hlColor=null, showBlank=false, dimRest=0} = s;
+  for (let i = 0; i < 900; i++) {
+    let bg;
+    if (showBlank) {
+      bg = (hlStart !== null && i >= hlStart && i < hlStart + hlCount) ? hlColor : '#DCE8F5';
+    } else if (i < gray) {
+      bg = '#5A7A96';
+    } else if (hlStart !== null && i >= hlStart && i < hlStart + hlCount) {
+      bg = hlColor;
+    } else {
+      bg = '#DCE8F5';
+    }
+    html += `<div style="background:${bg};border-radius:1px;aspect-ratio:1;"></div>`;
+  }
+  return html;
+}
+
+function buildStories() {
+  const container = document.getElementById('storyCards');
+  SCENARIOS.forEach((s, idx) => {
+    const flip = idx % 2 === 1;
+    const legHtml = (s.leg||[]).map(l =>
+      `<span><span class="sleg-dot" style="background:${l.c};${l.b?'border:1px solid #CBD5E1;':''}"></span>${l.l}</span>`
+    ).join('');
+    const card = document.createElement('div');
+    card.className = `story-card${flip?' flip':''}`;
+    card.innerHTML = `
+      <div class="story-text">
+        <div class="story-icon">${s.icon}</div>
+        <h3>${s.title}</h3>
+        <p>${s.copy}</p>
+        ${s.note?`<p class="story-note">* ${s.note}</p>`:''}
+      </div>
+      <div>
+        <div class="sgw" id="sgw${idx}">
+          <div class="sgrid" id="sg${idx}"></div>
+          ${legHtml?`<div class="sleg">${legHtml}</div>`:''}
+          <button onclick="saveScenarioImg(${idx})" style="width:100%;margin-top:12px;padding:10px 14px;background:linear-gradient(120deg,#312E81,#4338CA);border:none;border-radius:8px;color:white;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:.04em;">📸 Save &amp; Share This Image</button>
+        </div>
+      </div>`;
+    container.appendChild(card);
+    document.getElementById(`sg${idx}`).innerHTML = scenarioGridHTML(s);
+  });
+}
+
+// ── SAVE SCENARIO IMAGE ──
+async function saveScenarioImg(idx) {
+  if(typeof html2canvas==='undefined'){toast('Image library loading, please wait...');return;}
+  const s=SCENARIOS[idx];
+  toast('Generating image...');
+  const qrUrl='https://ordinarymantrying.com/tools/life-a4/';
+  let qrDataUrl='';
+  try{if(typeof QRCode!=='undefined')qrDataUrl=await QRCode.toDataURL(qrUrl,{width:120,margin:1,color:{dark:'#1E293B',light:'#F1F5F9'}});}catch(_){}
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const exp=document.createElement('div');
+  exp.style.cssText='position:fixed;left:-9999px;top:0;width:580px;box-sizing:border-box;padding:32px 32px 28px;background:linear-gradient(155deg,#0F172A 0%,#1a2540 60%,#0F172A 100%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;';
+  document.body.appendChild(exp);
+  exp.insertAdjacentHTML('beforeend',`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <div style="font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#4B5563;">LIFE IS AN A4 SHEET · 900 SQUARES · 75 YEARS</div>
+      <div style="font-size:10px;color:#374151;">${dateStr}</div>
+    </div>`);
+  exp.insertAdjacentHTML('beforeend',`
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:34px;margin-bottom:10px;">${s.icon}</div>
+      <div style="font-size:22px;font-weight:900;color:#F1F5F9;letter-spacing:-.03em;line-height:1.2;margin-bottom:12px;">${s.title}</div>
+      <div style="font-size:13.5px;color:#94A3B8;line-height:1.8;max-width:460px;margin:0 auto;">${s.copy.replace(/<strong>/g,'').replace(/<\/strong>/g,'')}</div>
+    </div>`);
+  const gridWrap=document.createElement('div');
+  gridWrap.style.cssText='background:#FAFBFD;border-radius:6px;padding:14px;box-shadow:0 8px 32px rgba(0,0,0,.4);';
+  const gridInner=document.createElement('div');
+  gridInner.style.cssText='display:grid;grid-template-columns:repeat(30,1fr);gap:2px;';
+  gridInner.innerHTML=scenarioGridHTML(s);
+  gridWrap.appendChild(gridInner);
+  if(s.leg&&s.leg.length){
+    const legDiv=document.createElement('div');
+    legDiv.style.cssText='display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;';
+    s.leg.forEach(l=>{legDiv.insertAdjacentHTML('beforeend',`<span style="display:flex;align-items:center;gap:5px;font-size:9px;color:#64748B;"><span style="width:10px;height:10px;border-radius:1.5px;background:${l.c};${l.b?'border:1px solid #CBD5E1;':''}display:inline-block;flex-shrink:0;"></span>${l.l}</span>`);});
+    gridWrap.appendChild(legDiv);
+  }
+  exp.appendChild(gridWrap);
+  exp.insertAdjacentHTML('beforeend',`
+    <div style="display:flex;align-items:center;gap:16px;margin-top:20px;padding:16px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid rgba(255,255,255,.06);">
+      ${qrDataUrl?`<img src="${qrDataUrl}" width="72" height="72" style="border-radius:8px;flex-shrink:0;">`:''}
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#F1F5F9;margin-bottom:4px;">How many squares do YOU have left?</div>
+        <div style="font-size:10px;color:#6366F1;letter-spacing:.06em;">ordinarymantrying.com/tools/life-a4/</div>
+        <div style="font-size:9px;color:#4B5563;margin-top:4px;">Scan to see your own 900-square life</div>
+      </div>
+    </div>`);
+  try{
+    const canvas=await html2canvas(exp,{backgroundColor:null,scale:2,useCORS:true,logging:false});
+    const a=document.createElement('a');
+    a.download=`life-${s.title.replace(/[^a-z0-9]/gi,'-').toLowerCase()}.png`;
+    a.href=canvas.toDataURL('image/png');a.click();
+    toast('✓ Saved! Share on social media 📱');
+  }catch(e){toast('Generation failed — try Chrome or Safari.');}
+  document.body.removeChild(exp);
+}
+
+// ── MAIN GRID ──
+function renderGrid() {
+  const g = document.getElementById('a4');
+  if (!g) return;
+  const total = BASE + bonusM;
+  while (g.children.length > total) g.lastChild.remove();
+  while (g.children.length < total) g.appendChild(Object.assign(document.createElement('div'),{className:'cell'}));
+  const cells = g.children;
+  for (let i = 0; i < total; i++) {
+    const d = cells[i];
+    d.className = 'cell';
+    d.removeAttribute('data-tip');
+    if (i < pastM)       d.classList.add('past');
+    else if (i === pastM) d.classList.add('now');
+    else if (i >= BASE)   d.classList.add('bonus');
+    else                  d.classList.add('future');
+  }
+  BLOOMERS.forEach(b => {
+    if (b.month < total && b.month >= pastM) {
+      const c = cells[b.month];
+      if (c) { c.classList.add('ms'); c.setAttribute('data-tip', `Age ${b.age} — ${b.who}: ${b.what}`); }
+    }
+  });
+  document.getElementById('sLived').textContent = pastM;
+  document.getElementById('sLeft').textContent  = Math.max(0, BASE - pastM);
+  document.getElementById('sBonus').textContent = '+' + bonusM;
+}
+
+// ── REVEAL ──
+function reveal() {
+  const v = document.getElementById('bm').value;
+  if (!v) { toast('Please enter your birth month.'); return; }
+  const [yr, mo] = v.split('-').map(Number);
+  const now = new Date();
+  pastM = Math.max(0, (now.getFullYear()-yr)*12 + (now.getMonth()+1-mo));
+  LS('lifeA4_birth', v);
+  const dash = document.getElementById('dash');
+  dash.style.display = 'block';
+  dash.scrollIntoView({behavior:'smooth', block:'start'});
+  renderGrid();
+}
+
+// ── HABITS ──
+function slideUpdate() {
+  let sum = 0;
+  document.querySelectorAll('#habits input[type=range]').forEach((s,i) => {
+    sum += parseInt(s.value);
+    document.getElementById(`p${i}`).textContent = s.value + '%';
+  });
+  bonusM = Math.round(MAX_BONUS * (sum / (HABITS.length * 100)));
+  document.getElementById('sBonus').textContent = '+' + bonusM;
+  renderGrid();
+}
+
+function buildHabits() {
+  const c = document.getElementById('habits');
+  HABITS.forEach((h,i) => {
+    c.insertAdjacentHTML('beforeend',`
+      <div>
+        <div class="hlabel">${h.e} ${h.n}</div>
+        <div class="hdesc">${h.d}</div>
+        <div class="hrow">
+          <input type="range" min="0" max="100" value="0" oninput="slideUpdate()">
+          <span class="hval" id="p${i}">0%</span>
+        </div>
+      </div>`);
+  });
+}
+
+// ── BLOOMERS ──
+function buildBloomers() {
+  const c = document.getElementById('bloomerList');
+  BLOOMERS.forEach(b => {
+    c.insertAdjacentHTML('beforeend',`
+      <div class="bloomer">
+        <div class="bloomer-age">${b.age}</div>
+        <div><div class="bloomer-name">${b.who}</div><div class="bloomer-what">${b.what}</div></div>
+      </div>`);
+  });
+}
+
+// ── COMMUNITY WISHES ──
+function wishCard(txt, isMine=false, idx=0) {
+  const colors=['#6366F1','#10B981','#F59E0B','#EF4444','#8B5CF6','#F97316','#14B8A6'];
+  const col=colors[idx%colors.length];
+  return `<div class="w-card${isMine?' mine':''}">
+    <div style="font-size:13px">${txt}</div>
+    <div class="w-meta" style="color:${isMine?'var(--accent-l)':col}">${isMine?'you ✦':'community'}</div>
+  </div>`;
+}
+async function buildCommunityWishes() {
+  const c = document.getElementById('wList');
+  getSavedWishes().forEach(w => c.insertAdjacentHTML('beforeend', wishCard(w,true)));
+  let live=[];
+  try {
+    const r = await fetch('get_wishes.php',{cache:'no-store'});
+    if(r.ok){const j=await r.json();if(j.wishes&&j.wishes.length)live=j.wishes;}
+  } catch {}
+  const src = live.length ? live.map(w=>w.text) : COMMUNITY;
+  src.forEach((w,i) => c.insertAdjacentHTML('beforeend', wishCard(w,false,i)));
+}
+
+// ── LOCK WISHES ──
+function lockWishes() {
+  const urlRe = /(https?:\/\/|www\.|\.[a-z]{2,5}\/)/i;
+  const w = ['w1','w2','w3'].map(id=>document.getElementById(id).value.trim())
+    .filter(Boolean)
+    .filter(x => { if(urlRe.test(x)){toast('Wishes cannot contain links.');return false;} return true; });
+  if (!w.length) { toast('Write at least one wish before sealing.'); return; }
+  userWishes = w;
+  LS('lifeA4_wishes', JSON.stringify(w));
+  const wantsPublic = document.querySelector('input[name=privacy]:checked')?.value==='public';
+  if (wantsPublic) {
+    fetch('save_wish.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({wish:w[0],username:''})}).catch(()=>{});
+  }
+  ['w1','w2','w3'].forEach(id=>document.getElementById(id).disabled=true);
+  const btn=document.getElementById('btnLock');btn.disabled=true;btn.textContent='✓ Wishes sealed on your paper';
+  const wop=document.getElementById('wop');wop.style.display='block';
+  wop.innerHTML=w.map(x=>`<div>• ${x}</div>`).join('');
+  const list=document.getElementById('wList');
+  [...w].reverse().forEach(txt=>{const d=document.createElement('div');d.innerHTML=wishCard(txt,true);list.prepend(d.firstElementChild);});
+  document.getElementById('actCard').style.display='block';
+  setTimeout(()=>document.getElementById('actCard').scrollIntoView({behavior:'smooth',block:'nearest'}),250);
+  toast(wantsPublic?'✓ Sealed! Your #1 wish is submitted for review.':'✓ Sealed privately! Your A4 paper is ready to save.');
+}
+
+// ── PRIVACY TOGGLE ──
+function initPrivacyToggle() {
+  document.querySelectorAll('.ptab').forEach(tab => {
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');tab.querySelector('input[type=radio]').checked=true;
+      const pub=tab.querySelector('input').value==='public';
+      document.getElementById('privacyNote').textContent=pub
+        ?'Your #1 wish will be submitted for review. If approved, it appears in the community wall above.'
+        :'Stored locally on your device so you can download your A4 paper image. We never collect or see your wishes.';
+    });
+  });
+}
+
+// ── SAVE IMAGE ──
+async function saveImg() {
+  if(typeof html2canvas==='undefined'){toast('Image library loading, please wait...');return;}
+  const wishes=getSavedWishes();
+  toast('Generating your image...');
+  const exp=document.createElement('div');
+  exp.style.cssText='position:fixed;left:-9999px;top:0;width:560px;box-sizing:border-box;padding:32px 28px 24px;background:linear-gradient(155deg,#0F172A 0%,#1a2540 60%,#0F172A 100%);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;';
+  document.body.appendChild(exp);
+  exp.insertAdjacentHTML('beforeend',`
+    <div style="text-align:center;margin-bottom:22px;">
+      <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#64748B;margin-bottom:6px;">YOUR ENTIRE LIFE IS</div>
+      <div style="font-size:30px;font-weight:900;color:#F1F5F9;line-height:1.1;margin-bottom:6px;">An A4 Sheet of Paper</div>
+      <div style="font-size:12px;color:#475569;">900 squares &nbsp;·&nbsp; 75 years &nbsp;·&nbsp; 1 square = 1 month of your life</div>
+    </div>`);
+  const gridClone=document.getElementById('paperWrap').cloneNode(true);
+  gridClone.style.cssText='margin:0 auto;position:relative;';
+  const wopEl=gridClone.querySelector('.wish-on-paper');if(wopEl)wopEl.style.display='none';
+  exp.appendChild(gridClone);
+  exp.insertAdjacentHTML('beforeend',`
+    <div style="display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:10px;color:#64748B;">
+      <span>⬛ lived</span><span>⬜ remaining</span><span>🟩 bonus (up to 110 yrs)</span>
+    </div>`);
+  if(wishes.length){
+    exp.insertAdjacentHTML('beforeend',`
+      <div style="margin-top:20px;background:rgba(99,102,241,.13);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:20px 22px;">
+        <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#818CF8;margin-bottom:14px;">MY BUCKET LIST</div>
+        ${wishes.map((x,i)=>`<div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:${i<wishes.length-1?'12':'0'}px;"><span style="font-size:13px;font-weight:800;color:#818CF8;min-width:18px;">${i+1}.</span><span style="font-size:17px;font-weight:700;color:#F1F5F9;line-height:1.35;">${x}</span></div>`).join('')}
+      </div>`);
+  }
+  exp.insertAdjacentHTML('beforeend',`
+    <div style="margin-top:18px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);border-radius:14px;padding:16px 20px;">
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#34D399;margin-bottom:12px;">🟩 DO THESE DAILY — EACH HABIT ADDS MONTHS TO YOUR GRID</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;">
+        ${HABITS.map(h=>`<div style="display:flex;gap:8px;align-items:flex-start;"><span style="font-size:14px;line-height:1;">${h.e}</span><div><div style="font-size:11px;font-weight:700;color:#F1F5F9;line-height:1.2;">${h.n}</div><div style="font-size:9px;color:#64748B;line-height:1.4;margin-top:2px;">${h.d.split('.')[0]}.</div></div></div>`).join('')}
+      </div>
+    </div>`);
+  const qrUrl='https://ordinarymantrying.com/tools/life-a4/';
+  let qrDataUrl='';
+  try{if(typeof QRCode!=='undefined')qrDataUrl=await QRCode.toDataURL(qrUrl,{width:90,margin:1,color:{dark:'#334155',light:'#0F172A'}});}catch(_){}
+  exp.insertAdjacentHTML('beforeend',`
+    <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px;">
+      ${qrDataUrl?`<img src="${qrDataUrl}" width="60" height="60" style="border-radius:6px;opacity:.7;">`:''}
+      <div style="font-size:9px;color:#334155;letter-spacing:.08em;line-height:1.8;">${qrDataUrl?'Scan to see your own A4 sheet<br>':''}ordinarymantrying.com/tools/life-a4/</div>
+    </div>`);
+  try{
+    const canvas=await html2canvas(exp,{backgroundColor:null,scale:2,useCORS:true,logging:false});
+    const a=document.createElement('a');a.download='my-life-a4-paper.png';a.href=canvas.toDataURL('image/png');a.click();
+    toast('✓ Image saved! Share it or set as wallpaper.');
+    setTimeout(showKofi, 1800);
+  }catch(e){toast('Image generation failed — try Chrome or Safari.');}
+  document.body.removeChild(exp);
+}
+
+// ── PRINT ──
+function printPaper() {
+  const wishes=getSavedWishes();
+  const cells=Array.from(document.querySelectorAll('#a4 .cell'));
+  const cellsHtml=cells.map(c=>{
+    let bg='#DCE8F5';
+    if(c.classList.contains('past'))bg='#5A7A96';
+    if(c.classList.contains('now'))bg='#EF4444';
+    if(c.classList.contains('bonus'))bg='#34D399';
+    const dot=c.classList.contains('ms')?`<span style="display:block;width:4px;height:4px;background:#EF4444;border-radius:50%;margin:auto;margin-top:calc(50% - 2px);"></span>`:'';
+    return `<div style="background:${bg};border-radius:2px;aspect-ratio:1;">${dot}</div>`;
+  }).join('');
+  const habitsHtml=HABITS.map(h=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+      <span style="width:16px;height:16px;border:1.5px solid #94A3B8;border-radius:3px;display:inline-block;flex-shrink:0;"></span>
+      <span style="font-size:11px;">${h.e} <strong>${h.n}</strong> — ${h.d.split('.')[0]}.</span>
+    </div>`).join('');
+  const wishesHtml=wishes.length
+    ?wishes.map((w,i)=>`<div style="font-size:15px;font-weight:700;margin-bottom:8px;color:#1E293B;"><span style="color:#6366F1;margin-right:6px;">${i+1}.</span>${w}</div>`).join('')
+    :`<div style="font-size:13px;color:#94A3B8;font-style:italic;">Seal your wishes to see them here.</div>`;
+  const win=window.open('','_blank');
+  win.document.write(`<!DOCTYPE html><html><head>
+<meta charset="UTF-8"><title>My Life A4 Paper</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@page{size:A4 portrait;margin:12mm 14mm 10mm}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:white;color:#1E293B}
+.header{text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #E2E8F0}
+.header h1{font-size:19px;font-weight:900;color:#0F172A;letter-spacing:-.02em}
+.header p{font-size:9.5px;color:#64748B;margin-top:3px;letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(30,1fr);gap:2px;margin-bottom:8px}
+.legend{display:flex;gap:14px;font-size:9.5px;color:#64748B;margin-bottom:10px;align-items:center}
+.leg-dot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:3px}
+.stitle{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;margin-bottom:6px}
+.wishes{margin-bottom:10px;padding:9px 13px;border:1.5px solid #C7D2FE;border-radius:8px;background:#F5F3FF}
+.habits-box{margin-bottom:10px;padding:9px 13px;border:1.5px solid #BBF7D0;border-radius:8px;background:#F0FDF4}
+.hgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px}
+.hrow{display:flex;align-items:flex-start;gap:7px}
+.hcheck{width:14px;height:14px;border:1.5px solid #6EE7B7;border-radius:3px;flex-shrink:0;margin-top:1px}
+.htext{font-size:10px;line-height:1.4;color:#1E293B}
+.htext strong{color:#065F46}
+.footer{display:flex;align-items:center;justify-content:space-between;margin-top:8px;padding-top:6px;border-top:1px solid #F1F5F9}
+.footer-url{font-size:10px;font-weight:700;color:#6366F1;letter-spacing:.04em}
+.footer-note{font-size:8.5px;color:#CBD5E1}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head><body>
+<div class="header">
+  <h1>Your Life is an A4 Sheet of Paper</h1>
+  <p>900 SQUARES &nbsp;·&nbsp; 75 YEARS &nbsp;·&nbsp; 1 SQUARE = 1 MONTH &nbsp;·&nbsp; 🟩 HEALTHY HABITS CAN EXTEND THIS TO 110 YEARS</p>
+</div>
+<div class="grid">${cellsHtml}</div>
+<div class="legend">
+  <span><span class="leg-dot" style="background:#5A7A96"></span>Months lived</span>
+  <span><span class="leg-dot" style="background:#EF4444"></span>Right now</span>
+  <span><span class="leg-dot" style="background:#DCE8F5;border:1px solid #CBD5E1"></span>Remaining</span>
+  <span><span class="leg-dot" style="background:#34D399"></span>Bonus months (healthy habits)</span>
+</div>
+<div class="wishes">
+  <div class="stitle">📌 My Bucket List — what I will do with my remaining squares</div>
+  ${wishesHtml}
+</div>
+<div class="habits-box">
+  <div class="stitle">🟩 7 Daily Habits That Add Years to Your Grid — Check Off Each Day</div>
+  <div class="hgrid">
+    ${HABITS.map(h=>`
+    <div class="hrow">
+      <div class="hcheck"></div>
+      <div class="htext">${h.e} <strong>${h.n}</strong> — ${h.d.split('.')[0]}.</div>
+    </div>`).join('')}
+  </div>
+</div>
+<div class="footer">
+  <div class="footer-url">ordinarymantrying.com/tools/life-a4/</div>
+  <div class="footer-note">See your own grid · share with someone you love</div>
+</div>
+<script>window.onload=function(){window.print()}<\/script>
+</body></html>`);
+  win.document.close();
+  setTimeout(showKofi, 2000);
+}
+
+// ── SHARE ──
+function sharePaper() {
+  const left=Math.max(0,BASE-pastM),wish=userWishes[0]||'';
+  const bm=document.getElementById('bm').value;
+  const base='https://ordinarymantrying.com/tools/life-a4/';
+  const url=bm?`${base}?birth=${encodeURIComponent(bm)}`:base;
+  let txt=`Your life is an A4 sheet. I've lived ${pastM} months. ${left} remain.`;
+  if(wish)txt+=` My #1 wish: "${wish}"`;
+  txt+=`\nSee your own → ${url}`;
+  if(navigator.share){navigator.share({title:'My Life A4 Paper',text:txt,url}).catch(()=>{});}
+  else{navigator.clipboard.writeText(txt).then(()=>{toast('Share link copied!');const sp=document.getElementById('sp');sp.style.display='block';sp.textContent=txt;}).catch(()=>toast('Copy failed.'));}
+}
+
+// ── KO-FI ──
+let _kofiShown=false;
+function showKofi(){if(_kofiShown)return;_kofiShown=true;document.getElementById('kofiOverlay').classList.add('show');}
+function closeKofi(){document.getElementById('kofiOverlay').classList.remove('show');}
+
+// ── HELPERS ──
+function getSavedWishes(){try{return JSON.parse(localStorage.getItem('lifeA4_wishes')||'[]').filter(w=>!/(https?:\/\/|www\.)/i.test(w));}catch{return [];}}
+function LS(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch{}}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+// ── INIT ──
+(function(){
+  buildStories();
+  buildHabits();
+  buildBloomers();
+  buildCommunityWishes();
+  initPrivacyToggle();
+  // URL param: ?birth=YYYY-MM → auto-reveal
+  const urlBirth=new URLSearchParams(location.search).get('birth');
+  const saved=urlBirth||LS('lifeA4_birth');
+  if(saved){
+    document.getElementById('bm').value=saved;
+    if(urlBirth){
+      // Auto-reveal immediately — user arrived via share link
+      setTimeout(()=>{
+        const [yr,mo]=urlBirth.split('-').map(Number);
+        const now=new Date();
+        pastM=Math.max(0,(now.getFullYear()-yr)*12+(now.getMonth()+1-mo));
+        LS('lifeA4_birth',urlBirth);
+        const dash=document.getElementById('dash');dash.style.display='block';
+        renderGrid();
+        setTimeout(()=>dash.scrollIntoView({behavior:'smooth',block:'start'}),100);
+      },300);
+    }
+  }
+  const sw=getSavedWishes();
+  if(sw.length){
+    userWishes=sw;
+    sw.forEach((w,i)=>{const el=document.getElementById(`w${i+1}`);if(el){el.value=w;el.disabled=true;}});
+    document.getElementById('btnLock').disabled=true;document.getElementById('btnLock').textContent='✓ Wishes sealed on your paper';
+    const wop=document.getElementById('wop');wop.style.display='block';wop.innerHTML=sw.map(x=>`<div>• ${x}</div>`).join('');
+    document.getElementById('actCard').style.display='block';
+  }
+})();
+</script>
+</body>
+</html>
