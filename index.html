@@ -229,6 +229,7 @@ input[type=range]{width:100%;accent-color:var(--bonus)}
         </div>
         <p class="privacy-note" id="privacyNote">Stored locally on your device so you can download your A4 paper image. We never collect or see your wishes.</p>
         <button class="btn-lock" id="btnLock" onclick="lockWishes()">🔒 Seal My Wishes on My Paper</button>
+        <button class="btn-lock" id="btnUnlock" onclick="unlockWishes()" style="display:none;background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--muted);font-size:12px;margin-top:6px;">✏️ Edit wishes</button>
       </div>
       <div id="actCard">
         <h3 class="card-h">Your A4 paper is ready</h3>
@@ -649,6 +650,7 @@ function lockWishes() {
   }
   ['w1','w2','w3'].forEach(id=>document.getElementById(id).disabled=true);
   const btn=document.getElementById('btnLock');btn.disabled=true;btn.textContent='✓ Wishes sealed on your paper';
+  document.getElementById('btnUnlock').style.display='block';
   const wop=document.getElementById('wop');wop.style.display='block';
   wop.innerHTML=w.map(x=>`<div>• ${x}</div>`).join('');
   const list=document.getElementById('wList');
@@ -656,6 +658,15 @@ function lockWishes() {
   document.getElementById('actCard').style.display='block';
   setTimeout(()=>document.getElementById('actCard').scrollIntoView({behavior:'smooth',block:'nearest'}),250);
   toast(wantsPublic?'✓ Sealed! Your #1 wish is submitted for review.':'✓ Sealed privately! Your A4 paper is ready to save.');
+}
+
+// ── UNLOCK WISHES ──
+function unlockWishes() {
+  ['w1','w2','w3'].forEach(id=>document.getElementById(id).disabled=false);
+  const btn=document.getElementById('btnLock');btn.disabled=false;btn.textContent='🔒 Seal My Wishes on My Paper';
+  document.getElementById('btnUnlock').style.display='none';
+  userWishes=[];LS('lifeA4_wishes','[]');
+  document.getElementById('wop').style.display='none';
 }
 
 // ── PRIVACY TOGGLE ──
@@ -865,6 +876,7 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
     userWishes=sw;
     sw.forEach((w,i)=>{const el=document.getElementById(`w${i+1}`);if(el){el.value=w;el.disabled=true;}});
     document.getElementById('btnLock').disabled=true;document.getElementById('btnLock').textContent='✓ Wishes sealed on your paper';
+    document.getElementById('btnUnlock').style.display='block';
     const wop=document.getElementById('wop');wop.style.display='block';wop.innerHTML=sw.map(x=>`<div>• ${x}</div>`).join('');
     document.getElementById('actCard').style.display='block';
   }
